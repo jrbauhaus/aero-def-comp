@@ -9,7 +9,6 @@ interface MatchData {
 
 interface Props {
   userSalary: number
-  userBonus?: number | null
   matches: MatchData
 }
 
@@ -29,96 +28,88 @@ function SatisfactionDot({ score }: { score: number | null }) {
   const colors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#9147ff']
   return (
     <span
-      className="inline-block w-2 h-2 rounded-full ml-1"
+      className="inline-block w-2 h-2 rounded-full"
       style={{ backgroundColor: colors[score] }}
       title={`Satisfaction: ${score}/5`}
     />
   )
 }
 
-function Signal({ userSalary, medianSalary }: { userSalary: number; medianSalary: number }) {
-  const diff = userSalary - medianSalary
-  const pct = Math.round((diff / medianSalary) * 100)
-  const absPct = Math.abs(pct)
-
-  let headline: string
-  let sub: string
-  let color: string
-  let barColor: string
-
-  if (pct >= 10) {
-    headline = `+${absPct}%`
-    sub = 'above market for your profile'
-    color = '#9147ff'
-    barColor = '#9147ff'
-  } else if (pct <= -10) {
-    headline = `-${absPct}%`
-    sub = 'below market for your profile'
-    color = '#ef4444'
-    barColor = '#ef4444'
-  } else {
-    headline = '~'
-    sub = 'at market for your profile'
-    color = '#adadb8'
-    barColor = '#adadb8'
-  }
-
+function StatTile({ label, value, sub, accent }: {
+  label: string
+  value: string
+  sub?: string
+  accent?: string
+}) {
   return (
-    <div className="rounded-xl border border-[#2a2a2d] bg-[#18181b] px-6 py-8 mb-8 text-center">
-      <p className="text-xs font-semibold uppercase tracking-widest text-[#5a5a6a] mb-3">Your signal</p>
-      <p className="text-6xl font-black tracking-tight mb-2" style={{ color }}>{headline}</p>
-      <p className="text-sm text-[#adadb8]">{sub}</p>
-      <div className="mt-5 pt-5 border-t border-[#2a2a2d] flex justify-center gap-8 text-xs text-[#5a5a6a]">
-        <span>your base <strong className="text-[#efeff1] text-sm">{formatK(userSalary)}</strong></span>
-        <span>median <strong className="text-[#efeff1] text-sm">{formatK(medianSalary)}</strong></span>
-        <span>delta <strong className="text-sm" style={{ color: barColor }}>{diff >= 0 ? '+' : ''}{formatK(diff)}</strong></span>
+    <div className="bg-[#1f1f23] border border-[#2e2e33] rounded-xl p-4 flex flex-col justify-between min-h-[90px]">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5a5a6a]">{label}</p>
+      <div>
+        <p className="text-2xl font-black tracking-tight" style={{ color: accent ?? '#efeff1' }}>{value}</p>
+        {sub && <p className="text-xs text-[#5a5a6a] mt-0.5">{sub}</p>}
       </div>
     </div>
   )
 }
 
-function CompRow({ comp }: { comp: Comp }) {
+function CompCard({ comp }: { comp: Comp }) {
   const total = comp.salary_base + (comp.bonus ?? 0)
   return (
-    <div className="flex items-start justify-between py-4 border-b border-[#2a2a2d] last:border-0">
-      <div className="flex-1 pr-4">
-        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-[#5a5a6a] mb-1 items-center">
-          {comp.company && <span className="text-[#adadb8]">{comp.company}</span>}
-          {comp.location && <span>{comp.location}</span>}
-          {comp.yoe != null && <span>{comp.yoe} yrs</span>}
-          {comp.level_numeric != null && <span>L{comp.level_numeric}</span>}
+    <div className="bg-[#1f1f23] border border-[#2e2e33] rounded-xl p-4">
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex flex-wrap gap-x-2 gap-y-0.5 items-center">
+          {comp.company && <span className="text-xs font-semibold text-[#adadb8]">{comp.company}</span>}
           <SatisfactionDot score={comp.satisfaction} />
         </div>
-        {comp.responsibilities && (
-          <p className="text-xs text-[#5a5a6a] italic leading-relaxed">{comp.responsibilities}</p>
-        )}
+        <p className="text-base font-black text-[#efeff1] shrink-0 ml-2">{formatK(comp.salary_base)}</p>
       </div>
-      <div className="text-right shrink-0">
-        <p className="text-sm font-bold text-[#efeff1]">{formatK(comp.salary_base)}</p>
-        {comp.bonus ? (
-          <p className="text-xs text-[#5a5a6a]">+{formatK(comp.bonus)} · {formatK(total)}</p>
-        ) : null}
-      </div>
-    </div>
-  )
-}
 
-function Section({ label, sublabel, comps }: { label: string; sublabel: string; comps: Comp[] }) {
-  return (
-    <div className="mb-8">
-      <p className="text-xs font-bold uppercase tracking-widest text-[#9147ff] mb-0.5">{label}</p>
-      <p className="text-xs text-[#5a5a6a] mb-3">{sublabel}</p>
-      <div className="bg-[#18181b] border border-[#2a2a2d] rounded-xl px-5">
-        {comps.map((c, i) => <CompRow key={i} comp={c} />)}
+      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-[#5a5a6a] mb-2">
+        {comp.discipline && <span className="text-[#adadb8]">{comp.discipline}</span>}
+        {comp.track && <span className="text-[#adadb8]">{comp.track.toUpperCase()}</span>}
+        {comp.location && <span>{comp.location}</span>}
+        {comp.yoe != null && <span>{comp.yoe} yrs</span>}
+        {comp.level_numeric != null && <span>L{comp.level_numeric}</span>}
+        {comp.bonus ? <span>+{formatK(comp.bonus)} bonus · {formatK(total)} total</span> : null}
       </div>
+
+      {comp.responsibilities && (
+        <p className="text-xs text-[#5a5a6a] italic leading-relaxed border-t border-[#2a2a2d] pt-2 mt-1">
+          {comp.responsibilities}
+        </p>
+      )}
     </div>
   )
 }
 
 export default function Results({ userSalary, matches }: Props) {
   const { tight, broad } = matches
-  const medianTight = median(tight.map(c => c.salary_base))
+  const medianSalary = median(tight.map(c => c.salary_base))
   const noData = tight.length === 0 && broad.length === 0
+
+  const diff = medianSalary > 0 ? userSalary - medianSalary : 0
+  const pct = medianSalary > 0 ? Math.round((diff / medianSalary) * 100) : null
+  const absPct = pct !== null ? Math.abs(pct) : null
+
+  let signalLabel = '—'
+  let signalSub = 'not enough data yet'
+  let signalColor = '#5a5a6a'
+
+  if (pct !== null) {
+    if (pct >= 10) {
+      signalLabel = `+${absPct}%`
+      signalSub = `you're above your peer group`
+      signalColor = '#9147ff'
+    } else if (pct <= -10) {
+      signalLabel = `-${absPct}%`
+      signalSub = `you're below your peer group`
+      signalColor = '#ef4444'
+    } else {
+      signalLabel = `${pct >= 0 ? '+' : ''}${pct}%`
+      signalSub = `roughly at market for your profile`
+      signalColor = '#adadb8'
+    }
+  }
 
   if (noData) {
     return (
@@ -130,24 +121,80 @@ export default function Results({ userSalary, matches }: Props) {
   }
 
   return (
-    <div>
-      {medianTight > 0 && <Signal userSalary={userSalary} medianSalary={medianTight} />}
+    <div className="space-y-3">
 
+      {/* Row 1: Signal hero + stat tiles */}
+      <div className="grid grid-cols-3 gap-3">
+
+        {/* Signal — spans 2 cols */}
+        <div className="col-span-2 bg-[#1f1f23] border border-[#2e2e33] rounded-xl p-5 flex flex-col justify-between min-h-[140px]">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5a5a6a]">vs. your peers</p>
+          <div>
+            <p className="text-6xl font-black tracking-tight leading-none mb-1" style={{ color: signalColor }}>
+              {signalLabel}
+            </p>
+            <p className="text-xs text-[#5a5a6a]">{signalSub}</p>
+          </div>
+        </div>
+
+        {/* Stat tiles stacked */}
+        <div className="flex flex-col gap-3">
+          <StatTile
+            label="Median"
+            value={medianSalary > 0 ? formatK(medianSalary) : '—'}
+            sub="peer group"
+          />
+          <StatTile
+            label="Matches"
+            value={String(tight.length)}
+            sub={tight.length === 1 ? 'person like you' : 'people like you'}
+            accent="#9147ff"
+          />
+        </div>
+      </div>
+
+      {/* Row 2: your base + delta tiles */}
+      {medianSalary > 0 && (
+        <div className="grid grid-cols-2 gap-3">
+          <StatTile
+            label="Your base"
+            value={formatK(userSalary)}
+          />
+          <StatTile
+            label="Delta"
+            value={`${diff >= 0 ? '+' : ''}${formatK(diff)}`}
+            sub="vs median"
+            accent={diff >= 0 ? '#9147ff' : '#ef4444'}
+          />
+        </div>
+      )}
+
+      {/* People like you */}
       {tight.length > 0 && (
-        <Section
-          label="People like you"
-          sublabel={`${tight.length} match${tight.length !== 1 ? 'es' : ''} · same discipline, track, level, YOE ±2`}
-          comps={tight}
-        />
+        <div>
+          <div className="flex items-baseline justify-between mb-2 mt-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#9147ff]">People like you</p>
+            <p className="text-xs text-[#5a5a6a]">same discipline · track · level · YOE ±2</p>
+          </div>
+          <div className="space-y-2">
+            {tight.map((c, i) => <CompCard key={i} comp={c} />)}
+          </div>
+        </div>
       )}
 
+      {/* Others in discipline */}
       {broad.length > 0 && (
-        <Section
-          label="Others in your discipline"
-          sublabel={`${broad.length} result${broad.length !== 1 ? 's' : ''} · same discipline and track, broader range`}
-          comps={broad}
-        />
+        <div>
+          <div className="flex items-baseline justify-between mb-2 mt-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#9147ff]">Others in your discipline</p>
+            <p className="text-xs text-[#5a5a6a]">broader range</p>
+          </div>
+          <div className="space-y-2">
+            {broad.map((c, i) => <CompCard key={i} comp={c} />)}
+          </div>
+        </div>
       )}
+
     </div>
   )
 }

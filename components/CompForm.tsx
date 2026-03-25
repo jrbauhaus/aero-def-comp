@@ -274,7 +274,7 @@ interface Props {
   loading: boolean
 }
 
-const inputClass = "w-full border border-[#2a2a2d] bg-[#18181b] rounded-lg px-3 py-2.5 text-sm text-[#efeff1] placeholder-[#5a5a6a] focus:outline-none focus:ring-2 focus:ring-[#9147ff] focus:border-transparent transition"
+const inputClass = "w-full border border-[#2a2a2d] bg-[#1f1f23] rounded-lg px-3 py-2.5 text-sm text-[#efeff1] placeholder-[#5a5a6a] focus:outline-none focus:ring-2 focus:ring-[#9147ff] focus:border-transparent transition"
 const labelClass = "block text-xs font-semibold text-[#adadb8] mb-1.5 uppercase tracking-wider"
 
 const SATISFACTION_LABELS: Record<number, string> = {
@@ -339,19 +339,22 @@ export default function CompForm({ onSubmit, loading }: Props) {
         <label className={labelClass}>Track</label>
         <div className="flex gap-2">
           {TRACKS.map(t => (
-            <label
+            <button
               key={t.value}
-              className={`flex-1 text-center border rounded-lg py-2.5 text-sm cursor-pointer transition select-none font-medium ${
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, track: t.value }))}
+              className={`flex-1 text-center border rounded-lg py-2.5 text-sm transition font-medium ${
                 form.track === t.value
                   ? 'bg-[#9147ff] text-white border-[#9147ff]'
-                  : 'bg-[#18181b] text-[#adadb8] border-[#2a2a2d] hover:border-[#9147ff] hover:text-[#efeff1]'
+                  : 'bg-[#1f1f23] text-[#adadb8] border-[#2e2e33] hover:border-[#9147ff] hover:text-[#efeff1]'
               }`}
             >
-              <input type="radio" name="track" value={t.value} checked={form.track === t.value} onChange={set('track')} required className="sr-only" />
               {t.label}
-            </label>
+            </button>
           ))}
         </div>
+        {/* hidden required input so form validation still works */}
+        <input type="text" required value={form.track} onChange={() => {}} className="sr-only" aria-hidden />
       </div>
 
       {/* Level + YOE */}

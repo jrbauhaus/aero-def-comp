@@ -12,9 +12,10 @@ export interface Comp {
   bonus: number | null
   yoe: number
   level_numeric: number
+  discipline: string | null
+  track: string | null
   company: string | null
   location: string | null
-  track: string | null
   responsibilities: string | null
   satisfaction: number | null
 }
@@ -24,7 +25,7 @@ export async function getTightMatches(params: MatchParams): Promise<Comp[]> {
   const { discipline, track, level_numeric, yoe } = params
   const { data, error } = await supabase
     .from('comps')
-    .select('salary_base, bonus, yoe, level_numeric, company, location, track, responsibilities, satisfaction')
+    .select('salary_base, bonus, yoe, level_numeric, discipline, track, company, location, responsibilities, satisfaction')
     .eq('discipline', discipline)
     .eq('track', track)
     .eq('level_numeric', level_numeric)
@@ -42,7 +43,7 @@ export async function getBroadMatches(params: MatchParams): Promise<Comp[]> {
   const { discipline, track, level_numeric, yoe } = params
   const { data, error } = await supabase
     .from('comps')
-    .select('salary_base, bonus, yoe, level_numeric, company, location, track, responsibilities, satisfaction')
+    .select('salary_base, bonus, yoe, level_numeric, discipline, track, company, location, responsibilities, satisfaction')
     .eq('discipline', discipline)
     .eq('track', track)
     .not('salary_base', 'is', null)

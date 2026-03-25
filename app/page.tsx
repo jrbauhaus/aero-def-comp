@@ -30,41 +30,42 @@ export default function Home() {
     setError(null)
 
     try {
-      const [submitRes, matchRes] = await Promise.all([
-        fetch('/api/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            discipline: formData.discipline,
-            track: formData.track,
-            level_numeric: Number(formData.level_numeric),
-            yoe: Number(formData.yoe),
-            salary_base: Number(formData.salary_base),
-            bonus: formData.bonus ? Number(formData.bonus) : null,
-            location: formData.location || null,
-            company: formData.company || null,
-            responsibilities: formData.responsibilities || null,
-            satisfaction: formData.satisfaction ? Number(formData.satisfaction) : null,
-            degrees: null,
-          }),
+      // Match first — compare against existing data before adding yours
+      const matchRes = await fetch('/api/match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          discipline: formData.discipline,
+          track: formData.track,
+          level_numeric: Number(formData.level_numeric),
+          yoe: Number(formData.yoe),
         }),
-        fetch('/api/match', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            discipline: formData.discipline,
-            track: formData.track,
-            level_numeric: Number(formData.level_numeric),
-            yoe: Number(formData.yoe),
-          }),
-        }),
-      ])
-
-      const submitJson = await submitRes.json()
-      if (submitJson.error) throw new Error(submitJson.error)
+      })
 
       const matchJson = await matchRes.json()
       if (matchJson.error) throw new Error(matchJson.error)
+
+      // Then submit — your data helps the next person
+      const submitRes = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          discipline: formData.discipline,
+          track: formData.track,
+          level_numeric: Number(formData.level_numeric),
+          yoe: Number(formData.yoe),
+          salary_base: Number(formData.salary_base),
+          bonus: formData.bonus ? Number(formData.bonus) : null,
+          location: formData.location || null,
+          company: formData.company || null,
+          responsibilities: formData.responsibilities || null,
+          satisfaction: formData.satisfaction ? Number(formData.satisfaction) : null,
+          degrees: null,
+        }),
+      })
+
+      const submitJson = await submitRes.json()
+      if (submitJson.error) throw new Error(submitJson.error)
 
       setMatches(matchJson.data)
       setStep('results')
@@ -76,7 +77,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0e0e10]">
+    <div className="min-h-screen bg-[#18181b]">
       <div className="max-w-lg mx-auto px-5 py-16">
 
         {/* Header */}
@@ -92,7 +93,7 @@ export default function Home() {
         {step === 'confirm' && formData && (
           <div className="space-y-6">
             <p className="text-base font-bold text-[#efeff1]">Does this look right?</p>
-            <div className="bg-[#18181b] border border-[#2a2a2d] rounded-xl p-5 space-y-3 text-sm">
+            <div className="bg-[#1f1f23] border border-[#2e2e33] rounded-xl p-5 space-y-3 text-sm">
               <Row label="Discipline" value={formData.discipline} />
               <Row label="Track" value={formData.track.toUpperCase()} />
               <Row label="Level" value={`L${formData.level_numeric}`} />
