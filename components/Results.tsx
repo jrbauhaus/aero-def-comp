@@ -25,7 +25,7 @@ function formatK(n: number): string {
 
 function SatisfactionDot({ score }: { score: number | null }) {
   if (!score) return null
-  const colors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#9147ff']
+  const colors = ['', '#c94040', '#d4663a', '#c9a840', '#5a9e5a', '#e07840']
   return (
     <span
       className="inline-block w-2 h-2 rounded-full"
@@ -42,11 +42,11 @@ function StatTile({ label, value, sub, accent }: {
   accent?: string
 }) {
   return (
-    <div className="bg-[#1f1f23] border border-[#2e2e33] rounded-xl p-4 flex flex-col justify-between min-h-[90px]">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5a5a6a]">{label}</p>
+    <div className="bg-[var(--surface2)] border border-[var(--border)] rounded-xl p-4 flex flex-col justify-between min-h-[90px]">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--dim)]">{label}</p>
       <div>
-        <p className="text-2xl font-black tracking-tight" style={{ color: accent ?? '#efeff1' }}>{value}</p>
-        {sub && <p className="text-xs text-[#5a5a6a] mt-0.5">{sub}</p>}
+        <p className="text-2xl font-black tracking-tight" style={{ color: accent ?? 'var(--text)' }}>{value}</p>
+        {sub && <p className="text-xs text-[var(--dim)] mt-0.5">{sub}</p>}
       </div>
     </div>
   )
@@ -55,18 +55,18 @@ function StatTile({ label, value, sub, accent }: {
 function CompCard({ comp }: { comp: Comp }) {
   const total = comp.salary_base + (comp.bonus ?? 0)
   return (
-    <div className="bg-[#1f1f23] border border-[#2e2e33] rounded-xl p-4">
+    <div className="bg-[var(--surface2)] border border-[var(--border)] rounded-xl p-4">
       <div className="flex items-start justify-between mb-2">
         <div className="flex flex-wrap gap-x-2 gap-y-0.5 items-center">
-          {comp.company && <span className="text-xs font-semibold text-[#adadb8]">{comp.company}</span>}
+          {comp.company && <span className="text-xs font-semibold text-[var(--muted)]">{comp.company}</span>}
           <SatisfactionDot score={comp.satisfaction} />
         </div>
-        <p className="text-base font-black text-[#efeff1] shrink-0 ml-2">{formatK(comp.salary_base)}</p>
+        <p className="text-base font-black text-[var(--text)] shrink-0 ml-2">{formatK(comp.salary_base)}</p>
       </div>
 
-      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-[#5a5a6a] mb-2">
-        {comp.discipline && <span className="text-[#adadb8]">{comp.discipline}</span>}
-        {comp.track && <span className="text-[#adadb8]">{comp.track.toUpperCase()}</span>}
+      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-[var(--dim)] mb-2">
+        {comp.discipline && <span className="text-[var(--muted)]">{comp.discipline}</span>}
+        {comp.track && <span className="text-[var(--muted)]">{comp.track.toUpperCase()}</span>}
         {comp.location && <span>{comp.location}</span>}
         {comp.yoe != null && <span>{comp.yoe} yrs</span>}
         {comp.level_numeric != null && <span>L{comp.level_numeric}</span>}
@@ -74,7 +74,7 @@ function CompCard({ comp }: { comp: Comp }) {
       </div>
 
       {comp.responsibilities && (
-        <p className="text-xs text-[#5a5a6a] italic leading-relaxed border-t border-[#2a2a2d] pt-2 mt-1">
+        <p className="text-xs text-[var(--dim)] italic leading-relaxed border-t border-[var(--border)] pt-2 mt-1">
           {comp.responsibilities}
         </p>
       )}
@@ -99,7 +99,7 @@ export default function Results({ userSalary, matches }: Props) {
     if (pct >= 10) {
       signalLabel = `+${absPct}%`
       signalSub = `you're above your peer group`
-      signalColor = '#9147ff'
+      signalColor = '#e07840'
     } else if (pct <= -10) {
       signalLabel = `-${absPct}%`
       signalSub = `you're below your peer group`
@@ -113,9 +113,9 @@ export default function Results({ userSalary, matches }: Props) {
 
   if (noData) {
     return (
-      <div className="text-center py-16 border border-[#2a2a2d] rounded-xl bg-[#18181b]">
-        <p className="text-2xl font-black text-[#efeff1] mb-2">Not enough data yet.</p>
-        <p className="text-sm text-[#5a5a6a]">Your submission was saved — it helps the next person who looks like you.</p>
+      <div className="text-center py-16 border border-[var(--border)] rounded-xl bg-[var(--surface)]">
+        <p className="text-2xl font-black text-[var(--text)] mb-2">Not enough data yet.</p>
+        <p className="text-sm text-[var(--dim)]">Your submission was saved — it helps the next person who looks like you.</p>
       </div>
     )
   }
@@ -127,13 +127,13 @@ export default function Results({ userSalary, matches }: Props) {
       <div className="grid grid-cols-3 gap-3">
 
         {/* Signal — spans 2 cols */}
-        <div className="col-span-2 bg-[#1f1f23] border border-[#2e2e33] rounded-xl p-5 flex flex-col justify-between min-h-[140px]">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5a5a6a]">vs. your peers</p>
+        <div className="col-span-2 bg-[var(--surface2)] border border-[var(--border)] rounded-xl p-5 flex flex-col justify-between min-h-[140px]">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--dim)]">vs. your peers</p>
           <div>
             <p className="text-6xl font-black tracking-tight leading-none mb-1" style={{ color: signalColor }}>
               {signalLabel}
             </p>
-            <p className="text-xs text-[#5a5a6a]">{signalSub}</p>
+            <p className="text-xs text-[var(--dim)]">{signalSub}</p>
           </div>
         </div>
 
@@ -164,7 +164,7 @@ export default function Results({ userSalary, matches }: Props) {
             label="Delta"
             value={`${diff >= 0 ? '+' : ''}${formatK(diff)}`}
             sub="vs median"
-            accent={diff >= 0 ? '#9147ff' : '#ef4444'}
+            accent={diff >= 0 ? '#e07840' : '#c94040'}
           />
         </div>
       )}
@@ -173,8 +173,8 @@ export default function Results({ userSalary, matches }: Props) {
       {tight.length > 0 && (
         <div>
           <div className="flex items-baseline justify-between mb-2 mt-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#9147ff]">People like you</p>
-            <p className="text-xs text-[#5a5a6a]">same discipline · track · level · YOE ±2</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">People like you</p>
+            <p className="text-xs text-[var(--dim)]">same discipline · track · level · YOE ±2</p>
           </div>
           <div className="space-y-2">
             {tight.map((c, i) => <CompCard key={i} comp={c} />)}
@@ -186,8 +186,8 @@ export default function Results({ userSalary, matches }: Props) {
       {broad.length > 0 && (
         <div>
           <div className="flex items-baseline justify-between mb-2 mt-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#9147ff]">Others in your discipline</p>
-            <p className="text-xs text-[#5a5a6a]">broader range</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">Others in your discipline</p>
+            <p className="text-xs text-[var(--dim)]">broader range</p>
           </div>
           <div className="space-y-2">
             {broad.map((c, i) => <CompCard key={i} comp={c} />)}

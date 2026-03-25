@@ -20,13 +20,21 @@ export interface Comp {
   satisfaction: number | null
 }
 
+// Legacy 'engineering' rows should match any engineering subdiscipline
+function disciplineFilter(discipline: string): string {
+  const isEngineeringSub = discipline.includes('engineering')
+  return isEngineeringSub
+    ? `discipline.eq.${discipline},discipline.eq.engineering`
+    : `discipline.eq.${discipline}`
+}
+
 // Tight match: same discipline + track + level, yoe ±2
 export async function getTightMatches(params: MatchParams): Promise<Comp[]> {
   const { discipline, track, level_numeric, yoe } = params
   const { data, error } = await supabase
     .from('comps')
     .select('salary_base, bonus, yoe, level_numeric, discipline, track, company, location, responsibilities, satisfaction')
-    .eq('discipline', discipline)
+    .or(disciplineFilter(discipline))
     .eq('track', track)
     .eq('level_numeric', level_numeric)
     .gte('yoe', yoe - 2)
@@ -44,7 +52,7 @@ export async function getBroadMatches(params: MatchParams): Promise<Comp[]> {
   const { data, error } = await supabase
     .from('comps')
     .select('salary_base, bonus, yoe, level_numeric, discipline, track, company, location, responsibilities, satisfaction')
-    .eq('discipline', discipline)
+    .or(disciplineFilter(discipline))
     .eq('track', track)
     .not('salary_base', 'is', null)
     .gt('salary_base', 0)

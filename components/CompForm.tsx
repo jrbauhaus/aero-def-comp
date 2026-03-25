@@ -186,6 +186,7 @@ const DISCIPLINES = [
   // Non-engineering
   'finance',
   'program management',
+  'production',
   'operations',
   'supply chain',
   'contracts',
@@ -274,8 +275,8 @@ interface Props {
   loading: boolean
 }
 
-const inputClass = "w-full border border-[#2a2a2d] bg-[#1f1f23] rounded-lg px-3 py-2.5 text-sm text-[#efeff1] placeholder-[#5a5a6a] focus:outline-none focus:ring-2 focus:ring-[#9147ff] focus:border-transparent transition"
-const labelClass = "block text-xs font-semibold text-[#adadb8] mb-1.5 uppercase tracking-wider"
+const inputClass = "w-full border border-[var(--border)] bg-[var(--surface2)] rounded-lg px-3 py-2.5 text-sm text-[var(--text)] placeholder-[var(--dim)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition"
+const labelClass = "block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wider"
 
 const SATISFACTION_LABELS: Record<number, string> = {
   1: 'rough',
@@ -345,8 +346,8 @@ export default function CompForm({ onSubmit, loading }: Props) {
               onClick={() => setForm(prev => ({ ...prev, track: t.value }))}
               className={`flex-1 text-center border rounded-lg py-2.5 text-sm transition font-medium ${
                 form.track === t.value
-                  ? 'bg-[#9147ff] text-white border-[#9147ff]'
-                  : 'bg-[#1f1f23] text-[#adadb8] border-[#2e2e33] hover:border-[#9147ff] hover:text-[#efeff1]'
+                  ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                  : 'bg-[var(--surface2)] text-[var(--muted)] border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--text)]'
               }`}
             >
               {t.label}
@@ -434,8 +435,8 @@ export default function CompForm({ onSubmit, loading }: Props) {
               onClick={() => setSatisfaction(n)}
               className={`flex flex-col items-center gap-1 flex-1 py-2.5 rounded-lg border text-sm font-bold transition select-none ${
                 form.satisfaction === String(n)
-                  ? 'bg-[#9147ff] border-[#9147ff] text-white'
-                  : 'bg-[#18181b] border-[#2a2a2d] text-[#adadb8] hover:border-[#9147ff] hover:text-[#efeff1]'
+                  ? 'bg-[var(--accent)] border-[var(--accent)] text-white'
+                  : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)]'
               }`}
             >
               <span className="text-base">{n}</span>
@@ -448,7 +449,7 @@ export default function CompForm({ onSubmit, loading }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#9147ff] hover:bg-[#772ce8] text-white rounded-lg py-3.5 text-sm font-bold transition-colors disabled:opacity-50 tracking-wide"
+        className="w-full bg-[var(--accent)] hover:bg-[var(--accent-dim)] text-white rounded-lg py-3.5 text-sm font-bold transition-colors disabled:opacity-50 tracking-wide"
       >
         {loading ? 'Looking...' : 'See where you stand →'}
       </button>
