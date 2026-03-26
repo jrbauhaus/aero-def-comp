@@ -343,7 +343,7 @@ export default function CompForm({ onSubmit, loading }: Props) {
       {/* Company */}
       <div>
         <label className={labelClass}>Company</label>
-        <select value={form.company} onChange={set('company')} className={inputClass}>
+        <select value={form.company} onChange={set('company')} required className={inputClass}>
           <option value="">Select your company</option>
           {COMPANIES.map(o => (
             <option key={o.value} value={o.value}>{o.label}</option>
@@ -354,7 +354,7 @@ export default function CompForm({ onSubmit, loading }: Props) {
       {/* Location */}
       <div>
         <label className={labelClass}>Location</label>
-        <select value={form.location} onChange={set('location')} className={inputClass}>
+        <select value={form.location} onChange={set('location')} required className={inputClass}>
           <option value="">Select state or remote</option>
           {LOCATIONS.map(l => (
             <option key={l.value} value={l.value}>{l.label}</option>
@@ -364,22 +364,22 @@ export default function CompForm({ onSubmit, loading }: Props) {
 
       {/* Responsibilities */}
       <div>
-        <label className={labelClass}>
-          What do you actually do?{' '}
-        </label>
+        <label className={labelClass}>What do you actually do?</label>
         <textarea
-          value={form.responsibilities} onChange={set('responsibilities')}
+          value={form.responsibilities}
+          onChange={set('responsibilities')}
+          required
+          minLength={30}
           rows={3}
-          placeholder="e.g. Lead a team of 4 mechanical engineers on propulsion subsystems. Review drawings, run trade studies, interface with program office."
+          placeholder="e.g. Lead structural analysis on flight-critical components, coordinate with systems and manufacturing teams, review supplier drawings."
           className={`${inputClass} resize-none`}
         />
+        <p className="text-[11px] text-[var(--dim)] mt-1">Aim for 1–2 sentences. This is how we find people truly like you.</p>
       </div>
 
       {/* Satisfaction */}
       <div>
-        <label className={labelClass}>
-          How do you feel about your job?
-        </label>
+        <label className={labelClass}>How do you feel about your job?</label>
         <div className="flex gap-3 mt-1">
           {[1, 2, 3, 4, 5].map(n => (
             <button
@@ -397,6 +397,7 @@ export default function CompForm({ onSubmit, loading }: Props) {
             </button>
           ))}
         </div>
+        <input type="text" required value={form.satisfaction} onChange={() => {}} className="sr-only" aria-hidden />
       </div>
 
       <button
