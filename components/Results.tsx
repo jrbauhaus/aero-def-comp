@@ -1,6 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { Comp } from '@/lib/queries/comps'
+
+const DEFAULT_VISIBLE = 4
 
 interface MatchData {
   tight: Comp[]
@@ -84,6 +87,11 @@ function CompCard({ comp }: { comp: Comp }) {
 
 export default function Results({ userSalary, matches }: Props) {
   const { tight, broad } = matches
+  const [showAllTight, setShowAllTight] = useState(false)
+  const [showAllBroad, setShowAllBroad] = useState(false)
+
+  const visibleTight = showAllTight ? tight : tight.slice(0, DEFAULT_VISIBLE)
+  const visibleBroad = showAllBroad ? broad : broad.slice(0, DEFAULT_VISIBLE)
   const medianSalary = median(tight.map(c => c.salary_base))
   const noData = tight.length === 0 && broad.length === 0
 
@@ -177,8 +185,16 @@ export default function Results({ userSalary, matches }: Props) {
             <p className="text-xs text-[var(--dim)]">same discipline · track · level · YOE ±2</p>
           </div>
           <div className="space-y-2">
-            {tight.map((c, i) => <CompCard key={i} comp={c} />)}
+            {visibleTight.map((c, i) => <CompCard key={i} comp={c} />)}
           </div>
+          {tight.length > DEFAULT_VISIBLE && (
+            <button
+              onClick={() => setShowAllTight(v => !v)}
+              className="mt-2 text-xs text-[var(--dim)] hover:text-[var(--muted)] transition-colors w-full text-center py-2"
+            >
+              {showAllTight ? '↑ show less' : `↓ show ${tight.length - DEFAULT_VISIBLE} more`}
+            </button>
+          )}
         </div>
       )}
 
@@ -190,8 +206,16 @@ export default function Results({ userSalary, matches }: Props) {
             <p className="text-xs text-[var(--dim)]">broader range</p>
           </div>
           <div className="space-y-2">
-            {broad.map((c, i) => <CompCard key={i} comp={c} />)}
+            {visibleBroad.map((c, i) => <CompCard key={i} comp={c} />)}
           </div>
+          {broad.length > DEFAULT_VISIBLE && (
+            <button
+              onClick={() => setShowAllBroad(v => !v)}
+              className="mt-2 text-xs text-[var(--dim)] hover:text-[var(--muted)] transition-colors w-full text-center py-2"
+            >
+              {showAllBroad ? '↑ show less' : `↓ show ${broad.length - DEFAULT_VISIBLE} more`}
+            </button>
+          )}
         </div>
       )}
 
