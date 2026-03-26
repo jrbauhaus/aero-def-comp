@@ -2,172 +2,120 @@
 
 import { useState } from 'react'
 
-// Grouped by sector — value is the normalized DB string
-const COMPANIES: { group: string; options: { value: string; label: string }[] }[] = [
-  {
-    group: 'RTX',
-    options: [
-      { value: 'rtx - raytheon', label: 'RTX — Raytheon' },
-      { value: 'rtx - collins aerospace', label: 'RTX — Collins Aerospace' },
-      { value: 'rtx - pratt and whitney', label: 'RTX — Pratt & Whitney' },
-    ],
-  },
-  {
-    group: 'Prime Contractors',
-    options: [
-      { value: 'boeing defense', label: 'Boeing Defense' },
-      { value: 'general dynamics', label: 'General Dynamics' },
-      { value: 'l3harris', label: 'L3Harris Technologies' },
-      { value: 'leidos', label: 'Leidos' },
-      { value: 'lockheed martin', label: 'Lockheed Martin' },
-      { value: 'northrop grumman', label: 'Northrop Grumman' },
-      { value: 'hii', label: 'HII (Huntington Ingalls Industries)' },
-      { value: 'textron', label: 'Textron' },
-    ],
-  },
-  {
-    group: 'Mid-Tier Contractors',
-    options: [
-      { value: 'bae systems us', label: 'BAE Systems (US)' },
-      { value: 'general atomics', label: 'General Atomics' },
-      { value: 'sierra nevada corporation', label: 'Sierra Nevada Corporation' },
-      { value: 'oshkosh defense', label: 'Oshkosh Defense' },
-      { value: 'leonardo drs', label: 'Leonardo DRS' },
-      { value: 'curtiss-wright', label: 'Curtiss-Wright' },
-      { value: 'bwx technologies', label: 'BWX Technologies' },
-      { value: 'cubic corporation', label: 'Cubic Corporation' },
-      { value: 'v2x', label: 'V2X' },
-      { value: 'teledyne technologies', label: 'Teledyne Technologies' },
-      { value: 'heico', label: 'HEICO Corporation' },
-      { value: 'kaman', label: 'Kaman Corporation' },
-      { value: 'kratos defense', label: 'Kratos Defense & Security Solutions' },
-      { value: 'mercury systems', label: 'Mercury Systems' },
-    ],
-  },
-  {
-    group: 'Defense Services & IT',
-    options: [
-      { value: 'booz allen hamilton', label: 'Booz Allen Hamilton' },
-      { value: 'caci', label: 'CACI International' },
-      { value: 'jacobs', label: 'Jacobs' },
-      { value: 'mantech', label: 'ManTech International' },
-      { value: 'parsons', label: 'Parsons Corporation' },
-      { value: 'peraton', label: 'Peraton' },
-      { value: 'saic', label: 'SAIC' },
-      { value: 'mitre', label: 'MITRE Corporation' },
-      { value: 'aerospace corporation', label: 'The Aerospace Corporation' },
-      { value: 'johns hopkins apl', label: 'Johns Hopkins APL' },
-      { value: 'amentum', label: 'Amentum' },
-      { value: 'accenture federal', label: 'Accenture Federal Services' },
-      { value: 'deloitte government', label: 'Deloitte Government & Public Services' },
-    ],
-  },
-  {
-    group: 'Aerospace & Propulsion',
-    options: [
-      { value: 'aerojet rocketdyne', label: 'Aerojet Rocketdyne' },
-      { value: 'ge aerospace', label: 'GE Aerospace' },
-      { value: 'honeywell aerospace', label: 'Honeywell Aerospace Technologies' },
-      { value: 'parker aerospace', label: 'Parker Aerospace' },
-      { value: 'safran', label: 'Safran' },
-      { value: 'spirit aerosystems', label: 'Spirit AeroSystems' },
-      { value: 'transdigm', label: 'TransDigm Group' },
-      { value: 'moog', label: 'Moog Inc.' },
-      { value: 'ducommun', label: 'Ducommun' },
-      { value: 'triumph group', label: 'Triumph Group' },
-      { value: 'woodward', label: 'Woodward' },
-      { value: 'hexcel', label: 'Hexcel Corporation' },
-      { value: 'arconic', label: 'Arconic' },
-      { value: 'circor', label: 'CIRCOR International' },
-    ],
-  },
-  {
-    group: 'Space',
-    options: [
-      { value: 'spacex', label: 'SpaceX' },
-      { value: 'blue origin', label: 'Blue Origin' },
-      { value: 'rocket lab', label: 'Rocket Lab' },
-      { value: 'sierra space', label: 'Sierra Space' },
-      { value: 'relativity space', label: 'Relativity Space' },
-      { value: 'firefly aerospace', label: 'Firefly Aerospace' },
-      { value: 'maxar technologies', label: 'Maxar Technologies' },
-      { value: 'planet labs', label: 'Planet Labs' },
-      { value: 'voyager space', label: 'Voyager Space' },
-      { value: 'terran orbital', label: 'Terran Orbital' },
-      { value: 'redwire', label: 'Redwire Corporation' },
-      { value: 'ursa major', label: 'Ursa Major Technologies' },
-      { value: 'astranis', label: 'Astranis' },
-      { value: 'ast spacemobile', label: 'AST SpaceMobile' },
-      { value: 'momentus', label: 'Momentus' },
-      { value: 'spire global', label: 'Spire Global' },
-      { value: 'slingshot aerospace', label: 'Slingshot Aerospace' },
-    ],
-  },
-  {
-    group: 'eVTOL & Advanced Air Mobility',
-    options: [
-      { value: 'joby aviation', label: 'Joby Aviation' },
-      { value: 'archer aviation', label: 'Archer Aviation' },
-      { value: 'wisk aero', label: 'Wisk Aero' },
-      { value: 'beta technologies', label: 'BETA Technologies' },
-      { value: 'eve air mobility', label: 'Eve Air Mobility' },
-      { value: 'supernal', label: 'Supernal (Hyundai)' },
-      { value: 'vertical aerospace', label: 'Vertical Aerospace' },
-      { value: 'blade air mobility', label: 'Blade Air Mobility' },
-    ],
-  },
-  {
-    group: 'Defense Tech & Advanced Programs',
-    options: [
-      { value: 'anduril', label: 'Anduril Industries' },
-      { value: 'palantir', label: 'Palantir Technologies' },
-      { value: 'shield ai', label: 'Shield AI' },
-      { value: 'applied intuition', label: 'Applied Intuition' },
-      { value: 'scale ai', label: 'Scale AI' },
-      { value: 'saronic', label: 'Saronic Technologies' },
-      { value: 'epirus', label: 'Epirus' },
-      { value: 'hidden level', label: 'Hidden Level' },
-      { value: 'rebellion defense', label: 'Rebellion Defense' },
-      { value: 'vannevar labs', label: 'Vannevar Labs' },
-      { value: 'primer ai', label: 'Primer AI' },
-      { value: 'castelion', label: 'Castelion' },
-      { value: 'hermeus', label: 'Hermeus' },
-      { value: 'firehawk aerospace', label: 'Firehawk Aerospace' },
-    ],
-  },
-  {
-    group: 'Drones & UAS',
-    options: [
-      { value: 'aerovironment', label: 'AeroVironment' },
-      { value: 'red cat holdings', label: 'Red Cat Holdings' },
-      { value: 'zone 5 technologies', label: 'Zone 5 Technologies' },
-      { value: 'skydio', label: 'Skydio' },
-      { value: 'insitu', label: 'Insitu (Boeing subsidiary)' },
-      { value: 'textron systems', label: 'Textron Systems' },
-      { value: 'firestorm labs', label: 'Firestorm Labs' },
-    ],
-  },
-  {
-    group: 'International (Major US Operations)',
-    options: [
-      { value: 'airbus defense', label: 'Airbus Defence & Space' },
-      { value: 'bae systems intl', label: 'BAE Systems' },
-      { value: 'leonardo spa', label: 'Leonardo S.p.A.' },
-      { value: 'rheinmetall', label: 'Rheinmetall' },
-      { value: 'saab', label: 'Saab' },
-      { value: 'thales', label: 'Thales' },
-      { value: 'mbda', label: 'MBDA' },
-      { value: 'kongsberg', label: 'Kongsberg Defence & Aerospace' },
-      { value: 'dassault aviation', label: 'Dassault Aviation' },
-      { value: 'hanwha aerospace', label: 'Hanwha Aerospace' },
-    ],
-  },
-  {
-    group: 'Other',
-    options: [
-      { value: 'other', label: 'Other' },
-    ],
-  },
+// Flat alphabetical list — value is the normalized DB string
+const COMPANIES: { value: string; label: string }[] = [
+  { value: 'aar corp', label: 'AAR Corp' },
+  { value: 'accenture federal', label: 'Accenture Federal Services' },
+  { value: 'aerojet rocketdyne', label: 'Aerojet Rocketdyne' },
+  { value: 'aerovironment', label: 'AeroVironment' },
+  { value: 'airbus defense', label: 'Airbus Defence & Space' },
+  { value: 'amentum', label: 'Amentum' },
+  { value: 'anduril', label: 'Anduril Industries' },
+  { value: 'applied intuition', label: 'Applied Intuition' },
+  { value: 'arconic', label: 'Arconic' },
+  { value: 'archer aviation', label: 'Archer Aviation' },
+  { value: 'aerospace corporation', label: 'Aerospace Corporation, The' },
+  { value: 'ast spacemobile', label: 'AST SpaceMobile' },
+  { value: 'astranis', label: 'Astranis' },
+  { value: 'bae systems us', label: 'BAE Systems' },
+  { value: 'beta technologies', label: 'BETA Technologies' },
+  { value: 'blade air mobility', label: 'Blade Air Mobility' },
+  { value: 'blue origin', label: 'Blue Origin' },
+  { value: 'boeing defense', label: 'Boeing Defense' },
+  { value: 'booz allen hamilton', label: 'Booz Allen Hamilton' },
+  { value: 'bwx technologies', label: 'BWX Technologies' },
+  { value: 'caci', label: 'CACI International' },
+  { value: 'castelion', label: 'Castelion' },
+  { value: 'circor', label: 'CIRCOR International' },
+  { value: 'cubic corporation', label: 'Cubic Corporation' },
+  { value: 'curtiss-wright', label: 'Curtiss-Wright' },
+  { value: 'dassault aviation', label: 'Dassault Aviation' },
+  { value: 'deloitte government', label: 'Deloitte Government & Public Services' },
+  { value: 'ducommun', label: 'Ducommun' },
+  { value: 'chromalloy', label: 'Chromalloy' },
+  { value: 'eaton aerospace', label: 'Eaton Aerospace' },
+  { value: 'elevate aircraft seating', label: 'Elevate Aircraft Seating' },
+  { value: 'epirus', label: 'Epirus' },
+  { value: 'eve air mobility', label: 'Eve Air Mobility' },
+  { value: 'firefly aerospace', label: 'Firefly Aerospace' },
+  { value: 'firehawk aerospace', label: 'Firehawk Aerospace' },
+  { value: 'firestorm labs', label: 'Firestorm Labs' },
+  { value: 'ge aerospace', label: 'GE Aerospace' },
+  { value: 'general atomics', label: 'General Atomics' },
+  { value: 'general dynamics', label: 'General Dynamics' },
+  { value: 'hanwha aerospace', label: 'Hanwha Aerospace' },
+  { value: 'heico', label: 'HEICO Corporation' },
+  { value: 'hermeus', label: 'Hermeus' },
+  { value: 'hidden level', label: 'Hidden Level' },
+  { value: 'hii', label: 'HII (Huntington Ingalls Industries)' },
+  { value: 'honeywell aerospace', label: 'Honeywell Aerospace Technologies' },
+  { value: 'insitu', label: 'Insitu' },
+  { value: 'jacobs', label: 'Jacobs' },
+  { value: 'johns hopkins apl', label: 'Johns Hopkins APL' },
+  { value: 'joby aviation', label: 'Joby Aviation' },
+  { value: 'kaman', label: 'Kaman Corporation' },
+  { value: 'kongsberg', label: 'Kongsberg Defence & Aerospace' },
+  { value: 'kratos defense', label: 'Kratos Defense & Security Solutions' },
+  { value: 'l3harris', label: 'L3Harris Technologies' },
+  { value: 'leidos', label: 'Leidos' },
+  { value: 'leonardo drs', label: 'Leonardo DRS' },
+  { value: 'lockheed martin', label: 'Lockheed Martin' },
+  { value: 'mantech', label: 'ManTech International' },
+  { value: 'maxar technologies', label: 'Maxar Technologies' },
+  { value: 'mbda', label: 'MBDA' },
+  { value: 'mercury systems', label: 'Mercury Systems' },
+  { value: 'mitre', label: 'MITRE Corporation' },
+  { value: 'momentus', label: 'Momentus' },
+  { value: 'moog', label: 'Moog Inc.' },
+  { value: 'northrop grumman', label: 'Northrop Grumman' },
+  { value: 'oshkosh defense', label: 'Oshkosh Defense' },
+  { value: 'palantir', label: 'Palantir Technologies' },
+  { value: 'parker aerospace', label: 'Parker Aerospace' },
+  { value: 'parsons', label: 'Parsons Corporation' },
+  { value: 'peraton', label: 'Peraton' },
+  { value: 'planet labs', label: 'Planet Labs' },
+  { value: 'primer ai', label: 'Primer AI' },
+  { value: 'rebellion defense', label: 'Rebellion Defense' },
+  { value: 'recaro aircraft seating', label: 'Recaro Aircraft Seating' },
+  { value: 'red cat holdings', label: 'Red Cat Holdings' },
+  { value: 'redwire', label: 'Redwire Corporation' },
+  { value: 'relativity space', label: 'Relativity Space' },
+  { value: 'rheinmetall', label: 'Rheinmetall' },
+  { value: 'rocket lab', label: 'Rocket Lab' },
+  { value: 'rtx - collins aerospace', label: 'RTX — Collins Aerospace' },
+  { value: 'rtx - pratt and whitney', label: 'RTX — Pratt & Whitney' },
+  { value: 'rtx - raytheon', label: 'RTX — Raytheon' },
+  { value: 'saab', label: 'Saab' },
+  { value: 'safran', label: 'Safran' },
+  { value: 'saic', label: 'SAIC' },
+  { value: 'saronic', label: 'Saronic Technologies' },
+  { value: 'scale ai', label: 'Scale AI' },
+  { value: 'shield ai', label: 'Shield AI' },
+  { value: 'sierra nevada corporation', label: 'Sierra Nevada Corporation' },
+  { value: 'sierra space', label: 'Sierra Space' },
+  { value: 'skydio', label: 'Skydio' },
+  { value: 'slingshot aerospace', label: 'Slingshot Aerospace' },
+  { value: 'spacex', label: 'SpaceX' },
+  { value: 'spirit aerosystems', label: 'Spirit AeroSystems' },
+  { value: 'standardaero', label: 'StandardAero' },
+  { value: 'spire global', label: 'Spire Global' },
+  { value: 'supernal', label: 'Supernal' },
+  { value: 'teledyne technologies', label: 'Teledyne Technologies' },
+  { value: 'terran orbital', label: 'Terran Orbital' },
+  { value: 'textron', label: 'Textron' },
+  { value: 'textron systems', label: 'Textron Systems' },
+  { value: 'thales', label: 'Thales' },
+  { value: 'transdigm', label: 'TransDigm Group' },
+  { value: 'triumph group', label: 'Triumph Group' },
+  { value: 'ursa major', label: 'Ursa Major Technologies' },
+  { value: 'v2x', label: 'V2X' },
+  { value: 'vannevar labs', label: 'Vannevar Labs' },
+  { value: 'vertical aerospace', label: 'Vertical Aerospace' },
+  { value: 'voyager space', label: 'Voyager Space' },
+  { value: 'wisk aero', label: 'Wisk Aero' },
+  { value: 'woodward', label: 'Woodward' },
+  { value: 'zone 5 technologies', label: 'Zone 5 Technologies' },
+  { value: 'other', label: 'Other' },
 ]
 
 const DISCIPLINES = [
@@ -361,8 +309,18 @@ export default function CompForm({ onSubmit, loading }: Props) {
       {/* Level + YOE */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={labelClass}>Level <span className="normal-case font-normal text-[#5a5a6a]">(1–7)</span></label>
-          <input type="number" min={1} max={7} value={form.level_numeric} onChange={set('level_numeric')} required placeholder="e.g. 3" className={inputClass} />
+          <label className={labelClass}>Level</label>
+          <select value={form.level_numeric} onChange={set('level_numeric')} required className={inputClass}>
+            <option value="">Select your level</option>
+            <option value="1">L1 — Entry</option>
+            <option value="2">L2 — Early Career</option>
+            <option value="3">L3 — Mid-Level</option>
+            <option value="4">L4 — Upper-Level</option>
+            <option value="5">L5 — Lead</option>
+            <option value="6">L6 — Senior</option>
+            <option value="7">L7 — Principal</option>
+            <option value="8">L8 — Chief / Fellow</option>
+          </select>
         </div>
         <div>
           <label className={labelClass}>Years exp.</label>
@@ -384,22 +342,18 @@ export default function CompForm({ onSubmit, loading }: Props) {
 
       {/* Company */}
       <div>
-        <label className={labelClass}>Company <span className="normal-case font-normal text-[#5a5a6a]">(optional)</span></label>
+        <label className={labelClass}>Company</label>
         <select value={form.company} onChange={set('company')} className={inputClass}>
           <option value="">Select your company</option>
-          {COMPANIES.map(group => (
-            <optgroup key={group.group} label={group.group}>
-              {group.options.map(o => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </optgroup>
+          {COMPANIES.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
       </div>
 
       {/* Location */}
       <div>
-        <label className={labelClass}>Location <span className="normal-case font-normal text-[#5a5a6a]">(optional)</span></label>
+        <label className={labelClass}>Location</label>
         <select value={form.location} onChange={set('location')} className={inputClass}>
           <option value="">Select state or remote</option>
           {LOCATIONS.map(l => (
@@ -412,7 +366,6 @@ export default function CompForm({ onSubmit, loading }: Props) {
       <div>
         <label className={labelClass}>
           What do you actually do?{' '}
-          <span className="normal-case font-normal text-[#5a5a6a]">(optional — helps matching)</span>
         </label>
         <textarea
           value={form.responsibilities} onChange={set('responsibilities')}
@@ -425,7 +378,7 @@ export default function CompForm({ onSubmit, loading }: Props) {
       {/* Satisfaction */}
       <div>
         <label className={labelClass}>
-          How do you feel about your job? <span className="normal-case font-normal text-[#5a5a6a]">(optional)</span>
+          How do you feel about your job?
         </label>
         <div className="flex gap-3 mt-1">
           {[1, 2, 3, 4, 5].map(n => (

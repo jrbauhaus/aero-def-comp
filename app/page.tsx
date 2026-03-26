@@ -89,6 +89,7 @@ export default function Home() {
           >
             levar
           </h1>
+          <p className="text-sm font-semibold italic text-[#f97316] mt-0.5">real aerospace & defense comp data</p>
           <p className="text-sm text-[var(--dim)] mt-1">are you underpaid?</p>
         </div>
 
