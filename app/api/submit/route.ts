@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       location,
       degrees,
       company,
+      company_other,
       satisfaction,
       responsibilities,
     } = body
@@ -45,9 +46,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (level_numeric < 1 || level_numeric > 7) {
+    if (level_numeric < 1 || level_numeric > 8) {
       return NextResponse.json(
-        { data: null, error: 'Level must be between 1 and 7' },
+        { data: null, error: 'Level must be between 1 and 8' },
         { status: 400 }
       )
     }
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
       location: location?.trim() || null,
       degrees: degrees?.trim() || null,
       company: company?.toLowerCase().trim() || null,
+      company_other: company_other?.toLowerCase().trim() || null,
       satisfaction: satisfaction ? Number(satisfaction) : null,
       responsibilities: responsibilities?.trim() || null,
     })

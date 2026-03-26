@@ -214,6 +214,7 @@ export interface FormData {
   bonus: string
   location: string
   company: string
+  company_other: string
   responsibilities: string
   satisfaction: string
 }
@@ -244,6 +245,7 @@ export default function CompForm({ onSubmit, loading }: Props) {
     bonus: '',
     location: '',
     company: '',
+    company_other: '',
     responsibilities: '',
     satisfaction: '',
   })
@@ -349,6 +351,16 @@ export default function CompForm({ onSubmit, loading }: Props) {
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
+        {form.company === 'other' && (
+          <input
+            type="text"
+            value={form.company_other}
+            onChange={set('company_other')}
+            placeholder="Which company?"
+            required
+            className={`${inputClass} mt-2`}
+          />
+        )}
       </div>
 
       {/* Location */}

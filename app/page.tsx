@@ -58,6 +58,7 @@ export default function Home() {
           bonus: formData.bonus ? Number(formData.bonus) : null,
           location: formData.location || null,
           company: formData.company || null,
+          company_other: formData.company_other || null,
           responsibilities: formData.responsibilities || null,
           satisfaction: formData.satisfaction ? Number(formData.satisfaction) : null,
           degrees: null,
@@ -107,7 +108,12 @@ export default function Home() {
               <Row label="YOE" value={`${formData.yoe} years`} />
               <Row label="Base" value={`$${Number(formData.salary_base).toLocaleString()}`} />
               {formData.bonus && <Row label="Bonus" value={`$${Number(formData.bonus).toLocaleString()}`} />}
-              {formData.company && <Row label="Company" value={formData.company} />}
+              {formData.company && (
+                <Row
+                  label="Company"
+                  value={formData.company === 'other' && formData.company_other ? formData.company_other : formData.company}
+                />
+              )}
               {formData.location && <Row label="Location" value={formData.location} />}
               {formData.satisfaction && <Row label="Satisfaction" value={`${formData.satisfaction}/5`} />}
               {formData.responsibilities && (

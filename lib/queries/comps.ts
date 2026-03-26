@@ -75,6 +75,7 @@ export async function submitComp(comp: {
   location: string | null
   degrees: string | null
   company: string | null
+  company_other: string | null
   satisfaction: number | null
   responsibilities: string | null
 }) {
