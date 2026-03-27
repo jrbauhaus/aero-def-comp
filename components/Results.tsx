@@ -1,7 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Comp } from '@/lib/queries/comps'
+import ShareCard from '@/components/ShareCard'
+import { toPng } from 'html-to-image'
+
+function useCountUp(target: number, duration = 900): number {
+  const [value, setValue] = useState(0)
+  const raf = useRef<number>(0)
+  useEffect(() => {
+    const start = performance.now()
+    const animate = (now: number) => {
+      const elapsed = now - start
+      const progress = Math.min(elapsed / duration, 1)
+      // ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setValue(Math.round(eased * target))
+      if (progress < 1) raf.current = requestAnimationFrame(animate)
+    }
+    raf.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(raf.current)
+  }, [target, duration])
+  return value
+}
 
 const DEFAULT_VISIBLE = 4
 
@@ -13,6 +34,10 @@ interface MatchData {
 interface Props {
   userSalary: number
   matches: MatchData
+  discipline: string
+  track: string
+  level: number
+  company: string
 }
 
 function median(values: number[]): number {
@@ -85,19 +110,55 @@ function CompCard({ comp }: { comp: Comp }) {
   )
 }
 
-export default function Results({ userSalary, matches }: Props) {
+export default function Results({ userSalary, matches, discipline, track, level, company }: Props) {
   const { tight, broad } = matches
   const [showAllTight, setShowAllTight] = useState(false)
   const [showAllBroad, setShowAllBroad] = useState(false)
+  const [sharing, setSharing] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
 
-  const visibleTight = showAllTight ? tight : tight.slice(0, DEFAULT_VISIBLE)
-  const visibleBroad = showAllBroad ? broad : broad.slice(0, DEFAULT_VISIBLE)
+  const handleShare = async () => {
+    if (!cardRef.current) return
+    setSharing(true)
+    try {
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: '#0e0e10',
+      })
+      const blob = await (await fetch(dataUrl)).blob()
+      const file = new File([blob], 'levar-result.png', { type: 'image/png' })
+
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'My levar result' })
+      } else {
+        // fallback — download
+        const link = document.createElement('a')
+        link.download = 'levar-result.png'
+        link.href = dataUrl
+        link.click()
+      }
+    } catch (e) {
+      console.error('Share error:', e)
+    } finally {
+      setSharing(false)
+    }
+  }
+
   const medianSalary = median(tight.map(c => c.salary_base))
   const noData = tight.length === 0 && broad.length === 0
-
   const diff = medianSalary > 0 ? userSalary - medianSalary : 0
   const pct = medianSalary > 0 ? Math.round((diff / medianSalary) * 100) : null
   const absPct = pct !== null ? Math.abs(pct) : null
+
+  // animated values
+  const animatedPct = useCountUp(absPct ?? 0)
+  const animatedMedian = useCountUp(medianSalary)
+  const animatedBase = useCountUp(userSalary)
+  const animatedDiff = useCountUp(Math.abs(diff))
+
+  const visibleTight = showAllTight ? tight : tight.slice(0, DEFAULT_VISIBLE)
+  const visibleBroad = showAllBroad ? broad : broad.slice(0, DEFAULT_VISIBLE)
 
   let signalLabel = '—'
   let signalSub = 'not enough data yet'
@@ -105,15 +166,15 @@ export default function Results({ userSalary, matches }: Props) {
 
   if (pct !== null) {
     if (pct >= 10) {
-      signalLabel = `+${absPct}%`
+      signalLabel = `+${animatedPct}%`
       signalSub = `you're above your peer group`
       signalColor = '#e07840'
     } else if (pct <= -10) {
-      signalLabel = `-${absPct}%`
+      signalLabel = `-${animatedPct}%`
       signalSub = `you're below your peer group`
       signalColor = '#ef4444'
     } else {
-      signalLabel = `${pct >= 0 ? '+' : ''}${pct}%`
+      signalLabel = `${pct >= 0 ? '+' : ''}${animatedPct}%`
       signalSub = `roughly at market for your profile`
       signalColor = '#adadb8'
     }
@@ -130,6 +191,22 @@ export default function Results({ userSalary, matches }: Props) {
 
   return (
     <div className="space-y-3">
+
+      {/* Share button */}
+      {medianSalary > 0 && (
+        <button
+          onClick={handleShare}
+          disabled={sharing}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all"
+          style={{
+            background: sharing ? '#c4601a' : '#f97316',
+            border: 'none',
+            color: '#fff',
+          }}
+        >
+          {sharing ? 'preparing...' : '↗ share results'}
+        </button>
+      )}
 
       {/* Row 1: Signal hero + stat tiles */}
       <div className="grid grid-cols-3 gap-3">
@@ -149,7 +226,7 @@ export default function Results({ userSalary, matches }: Props) {
         <div className="flex flex-col gap-3">
           <StatTile
             label="Median"
-            value={medianSalary > 0 ? formatK(medianSalary) : '—'}
+            value={medianSalary > 0 ? formatK(animatedMedian) : '—'}
             sub="peer group"
           />
           <StatTile
@@ -166,14 +243,34 @@ export default function Results({ userSalary, matches }: Props) {
         <div className="grid grid-cols-2 gap-3">
           <StatTile
             label="Your base"
-            value={formatK(userSalary)}
+            value={formatK(animatedBase)}
           />
           <StatTile
             label="Delta"
-            value={`${diff >= 0 ? '+' : ''}${formatK(diff)}`}
+            value={`${diff >= 0 ? '+' : '-'}$${Math.round(animatedDiff / 1000)}k`}
             sub="vs median"
             accent={diff >= 0 ? '#e07840' : '#c94040'}
           />
+        </div>
+      )}
+
+      {/* Hidden card — off-screen, used only for image capture */}
+      {medianSalary > 0 && (
+        <div style={{ position: 'fixed', left: -9999, top: 0, width: 360, zIndex: -1, pointerEvents: 'none' }}>
+          <div ref={cardRef}>
+            <ShareCard
+              signalLabel={signalLabel}
+              signalSub={signalSub}
+              signalColor={signalColor}
+              discipline={discipline}
+              track={track}
+              level={level}
+              company={company}
+              medianSalary={medianSalary}
+              matchCount={tight.length}
+              peers={tight}
+            />
+          </div>
         </div>
       )}
 
@@ -218,6 +315,7 @@ export default function Results({ userSalary, matches }: Props) {
           )}
         </div>
       )}
+
 
     </div>
   )

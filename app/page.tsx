@@ -151,6 +151,10 @@ export default function Home() {
             <Results
               userSalary={Number(formData.salary_base)}
               matches={matches}
+              discipline={formData.discipline}
+              track={formData.track}
+              level={Number(formData.level_numeric)}
+              company={formData.company}
             />
             <button
               onClick={() => { setStep('form'); setFormData(null); setMatches(null) }}

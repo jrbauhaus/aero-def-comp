@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 
-// Flat alphabetical list — value is the normalized DB string
-const COMPANIES: { value: string; label: string }[] = [
+// Flat list — Gov/DoD pinned first, then alphabetical, Other at bottom
+const COMPANIES: { value: string; label: string; disabled?: boolean }[] = [
+  { value: 'government / dod', label: 'Government / DoD (Civilian)' },
+  { value: '__sep__', label: '──────────────────────', disabled: true },
   { value: 'aar corp', label: 'AAR Corp' },
   { value: 'accenture federal', label: 'Accenture Federal Services' },
   { value: 'aerojet rocketdyne', label: 'Aerojet Rocketdyne' },
@@ -15,6 +17,7 @@ const COMPANIES: { value: string; label: string }[] = [
   { value: 'arconic', label: 'Arconic' },
   { value: 'archer aviation', label: 'Archer Aviation' },
   { value: 'aerospace corporation', label: 'Aerospace Corporation, The' },
+  { value: 'arka', label: 'Arka Space' },
   { value: 'ast spacemobile', label: 'AST SpaceMobile' },
   { value: 'astranis', label: 'Astranis' },
   { value: 'bae systems us', label: 'BAE Systems' },
@@ -32,6 +35,7 @@ const COMPANIES: { value: string; label: string }[] = [
   { value: 'dassault aviation', label: 'Dassault Aviation' },
   { value: 'deloitte government', label: 'Deloitte Government & Public Services' },
   { value: 'ducommun', label: 'Ducommun' },
+  { value: 'durandal', label: 'Durandal' },
   { value: 'chromalloy', label: 'Chromalloy' },
   { value: 'eaton aerospace', label: 'Eaton Aerospace' },
   { value: 'elevate aircraft seating', label: 'Elevate Aircraft Seating' },
@@ -88,6 +92,7 @@ const COMPANIES: { value: string; label: string }[] = [
   { value: 'saab', label: 'Saab' },
   { value: 'safran', label: 'Safran' },
   { value: 'saic', label: 'SAIC' },
+  { value: 'silvus', label: 'Silvus Technologies' },
   { value: 'saronic', label: 'Saronic Technologies' },
   { value: 'scale ai', label: 'Scale AI' },
   { value: 'shield ai', label: 'Shield AI' },
@@ -107,6 +112,7 @@ const COMPANIES: { value: string; label: string }[] = [
   { value: 'thales', label: 'Thales' },
   { value: 'transdigm', label: 'TransDigm Group' },
   { value: 'triumph group', label: 'Triumph Group' },
+  { value: 'ultra maritime', label: 'Ultra Maritime' },
   { value: 'ursa major', label: 'Ursa Major Technologies' },
   { value: 'v2x', label: 'V2X' },
   { value: 'vannevar labs', label: 'Vannevar Labs' },
@@ -348,7 +354,7 @@ export default function CompForm({ onSubmit, loading }: Props) {
         <select value={form.company} onChange={set('company')} required className={inputClass}>
           <option value="">Select your company</option>
           {COMPANIES.map(o => (
-            <option key={o.value} value={o.value}>{o.label}</option>
+            <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>
           ))}
         </select>
         {form.company === 'other' && (
