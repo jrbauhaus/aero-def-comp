@@ -32,15 +32,13 @@ function disciplineFilter(discipline: string): string {
 export async function getTightMatches(params: MatchParams): Promise<Comp[]> {
   const { discipline, track, level_numeric, yoe } = params
   const { data, error } = await supabase
-    .from('comps')
+    .from('matchable_comps')
     .select('salary_base, bonus, yoe, level_numeric, discipline, track, company, location, responsibilities, satisfaction')
     .or(disciplineFilter(discipline))
     .eq('track', track)
     .eq('level_numeric', level_numeric)
     .gte('yoe', yoe - 2)
     .lte('yoe', yoe + 2)
-    .not('salary_base', 'is', null)
-    .gt('salary_base', 0)
 
   if (error) throw error
   return data ?? []
@@ -50,12 +48,10 @@ export async function getTightMatches(params: MatchParams): Promise<Comp[]> {
 export async function getBroadMatches(params: MatchParams): Promise<Comp[]> {
   const { discipline, track, level_numeric, yoe } = params
   const { data, error } = await supabase
-    .from('comps')
+    .from('matchable_comps')
     .select('salary_base, bonus, yoe, level_numeric, discipline, track, company, location, responsibilities, satisfaction')
     .or(disciplineFilter(discipline))
     .eq('track', track)
-    .not('salary_base', 'is', null)
-    .gt('salary_base', 0)
     .neq('level_numeric', level_numeric)
     .gte('yoe', yoe - 4)
     .lte('yoe', yoe + 4)
