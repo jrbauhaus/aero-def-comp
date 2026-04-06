@@ -151,7 +151,7 @@ export default function Home() {
           >
             levar
           </h1>
-          <p className="text-sm font-semibold italic text-[#f97316] mt-0.5">real aerospace & defense comp data</p>
+          <p className="text-xs font-semibold italic text-[#f97316] mt-0.5">real aerospace & defense comp data</p>
           <p className="text-sm text-[var(--dim)] mt-1">are you underpaid?</p>
         </div>
 
@@ -191,7 +191,14 @@ export default function Home() {
         )}
 
         {/* Form */}
-        {step === 'form' && <CompForm onSubmit={handleFormSubmit} loading={false} />}
+        {step === 'form' && (
+          <>
+            <div className="bg-[var(--accent)] rounded-xl px-4 py-3 mb-6">
+              <p className="text-sm font-bold text-white leading-snug">Submit your comp. See how you rank against 1,500+ real A&D salaries at your level and discipline. 90 seconds, no account.</p>
+            </div>
+            <CompForm onSubmit={handleFormSubmit} loading={false} />
+          </>
+        )}
 
         {/* Confirm */}
         {step === 'confirm' && formData && (
